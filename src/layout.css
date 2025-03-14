@@ -1,0 +1,85 @@
+/* 레이아웃 스타일링 */
+.layout-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.session-selector {
+  margin: 20px 0;
+}
+
+.session-selector select {
+  padding: 8px 12px;
+  margin-left: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.error-message {
+  color: red;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffeeee;
+  border-radius: 4px;
+}
+
+.loading {
+  margin: 20px 0;
+  font-style: italic;
+  color: #666;
+}
+
+.seat-layout {
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  display: inline-block;
+}
+
+.layout-row {
+  display: flex;
+}
+
+.layout-cell {
+  width: 80px;
+  height: 80px;
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  position: relative;
+}
+
+.aisle {
+  background-color: #f5f5f5;
+}
+
+.seat {
+  background-color: #e6f7ff;
+}
+
+.occupied {
+  background-color: #d9f7be;
+}
+
+.seat-id {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 10px;
+  color: #999;
+}
+
+.student-info {
+  text-align: center;
+  font-size: 11px;
+}
+
+.no-sessions {
+  margin: 40px 0;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
