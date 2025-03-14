@@ -30,6 +30,12 @@ const Issue: React.FC = () => {
     } catch (err) {
       setError("특이사항 목록을 불러오는데 실패했습니다.");
       console.error(err);
+
+      // 401 Unauthorized 에러 처리
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        localStorage.removeItem("token"); // 토큰 삭제
+        window.location.href = "/teacher/login"; // 로그인 페이지로 리다이렉트
+      }
     } finally {
       setLoading(false);
     }
@@ -64,6 +70,12 @@ const Issue: React.FC = () => {
     } catch (err) {
       setError("특이사항 목록 생성에 실패했습니다.");
       console.error(err);
+
+      // 401 Unauthorized 에러 처리
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/teacher/login";
+      }
     } finally {
       setLoading(false);
     }
@@ -95,6 +107,12 @@ const Issue: React.FC = () => {
     } catch (err) {
       setError("특이사항 목록 수정에 실패했습니다.");
       console.error(err);
+
+      // 401 Unauthorized 에러 처리
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/teacher/login";
+      }
     } finally {
       setLoading(false);
     }
@@ -113,6 +131,12 @@ const Issue: React.FC = () => {
     } catch (err) {
       setError("특이사항 목록 삭제에 실패했습니다.");
       console.error(err);
+
+      // 401 Unauthorized 에러 처리
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/teacher/login";
+      }
     } finally {
       setLoading(false);
     }

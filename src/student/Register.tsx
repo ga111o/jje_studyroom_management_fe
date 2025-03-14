@@ -74,8 +74,29 @@ const Register = () => {
         class_number: parsedInfo.class_number,
         student_number: parsedInfo.student_number,
       }));
+
+      // Filter sessions based on the loaded student info and move to step 2
+      const filtered = sessions.filter((session) => {
+        if (location && session.room.id !== parseInt(location, 10)) {
+          return false;
+        }
+
+        switch (parsedInfo.grade) {
+          case 1:
+            return session.one_grade;
+          case 2:
+            return session.two_grade;
+          case 3:
+            return session.three_grade;
+          default:
+            return false;
+        }
+      });
+
+      setFilteredSessions(filtered);
+      setStep(2);
     }
-  }, []);
+  }, [sessions, location]);
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -86,8 +107,8 @@ const Register = () => {
         setSessions(response.data.study_sessions);
         console.log(response.data.study_sessions);
       } catch (err) {
-        console.error("세션 데이터 가져오기 실패:", err);
-        setError("세션 정보를 불러오는데 실패했습니다.");
+        console.error("야자 데이터 가져오기 실패:", err);
+        setError("야자 정보를 불러오는데 실패했습니다.");
       }
     };
 
@@ -280,7 +301,7 @@ const Register = () => {
         </p>
 
         <label className="block text-gray-700 mb-2" htmlFor="session_id">
-          야자 세션 선택
+          신청 야자 선택
         </label>
 
         {filteredSessions.length > 0 ? (
@@ -292,7 +313,7 @@ const Register = () => {
             className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
             required
           >
-            <option value="">세션을 선택하세요</option>
+            <option value="">야자을 선택하세요</option>
             {filteredSessions.map((session) => (
               <option key={session.id} value={session.id}>
                 {session.name} ({session.start_time} - {session.end_time})
@@ -300,7 +321,7 @@ const Register = () => {
             ))}
           </select>
         ) : (
-          <p className="text-red-500 mb-4">이용 가능한 세션이 없습니다.</p>
+          <p className="text-red-500 mb-4">이용 가능한 야자가 없습니다.</p>
         )}
       </div>
 

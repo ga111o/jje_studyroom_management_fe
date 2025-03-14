@@ -28,6 +28,8 @@ interface Student {
   number: string;
   student_id: string;
   registered_at: string;
+  note: string | null;
+  issue_type: string | null;
 }
 
 interface Seat {
@@ -91,6 +93,11 @@ const Layout = () => {
         }
         console.log(response);
       } catch (err) {
+        if (axios.isAxiosError(err) && err.response?.status === 401) {
+          localStorage.removeItem("teacherToken");
+          window.location.href = "/teacher/login";
+          return;
+        }
         setError("야자를 불러오는 중 오류가 발생했어요.");
         console.error(err);
       }
@@ -116,9 +123,14 @@ const Layout = () => {
           }
         );
         setSessionLayout(response.data);
-        console.log(response);
+        console.log(response.data);
         setError(null);
       } catch (err) {
+        if (axios.isAxiosError(err) && err.response?.status === 401) {
+          localStorage.removeItem("teacherToken");
+          window.location.href = "/teacher/login";
+          return;
+        }
         setError("야자 신청 현황을 불러오는 중 오류가 발생했어요.");
         console.error(err);
       } finally {
@@ -142,6 +154,11 @@ const Layout = () => {
         );
         setIssueTypes(response.data);
       } catch (err) {
+        if (axios.isAxiosError(err) && err.response?.status === 401) {
+          localStorage.removeItem("teacherToken");
+          window.location.href = "/teacher/login";
+          return;
+        }
         console.error("특이사항 목록을 불러오는 도중 오류가 발생했어요.", err);
       }
     };
@@ -153,11 +170,63 @@ const Layout = () => {
     setSelectedSession(e.target.value);
   };
 
-  const handleStudentClick = (student: Student, seatId: string) => {
+  const handleStudentClick = (student: Student, registrationId: string) => {
     if (!student.id) return;
 
-    setSelectedStudent({ student, registrationId: seatId });
+    setSelectedStudent({ student, registrationId });
+
+    // Set the current issue type and memo when opening the modal
+    if (student.issue_type) {
+      setSelectedIssueId(student.issue_type);
+    } else {
+      setSelectedIssueId("");
+    }
+
+    if (student.note) {
+      setMemoText(student.note);
+    } else {
+      setMemoText("");
+    }
+
+    fetchStudentIssueAndNote(registrationId);
     setModalOpen(true);
+  };
+
+  const fetchStudentIssueAndNote = async (registrationId: string) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/issue/student/${registrationId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("teacherToken")}`,
+          },
+        }
+      );
+
+      if (selectedStudent) {
+        setSelectedStudent((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            student: {
+              ...prev.student,
+              issue_type: response.data.issue_type,
+              note: response.data.note,
+            },
+          };
+        });
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        localStorage.removeItem("teacherToken");
+        window.location.href = "/teacher/login";
+        return;
+      }
+      console.error(
+        "학생 특이사항과 메모를 불러오는 중 오류가 발생했어요.",
+        err
+      );
+    }
   };
 
   const handleIssueSubmit = async () => {
@@ -198,6 +267,11 @@ const Layout = () => {
             setSessionLayout(response.data);
             setError(null);
           } catch (err) {
+            if (axios.isAxiosError(err) && err.response?.status === 401) {
+              localStorage.removeItem("teacherToken");
+              window.location.href = "/teacher/login";
+              return;
+            }
             setError("야자 신청 현황을 불러오는 중 오류가 발생했어요.");
             console.error(err);
           } finally {
@@ -207,6 +281,11 @@ const Layout = () => {
         fetchSessionLayout();
       }
     } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        localStorage.removeItem("teacherToken");
+        window.location.href = "/teacher/login";
+        return;
+      }
       setError("특이사항 할당 중 오류가 발생했어요.");
       console.error(err);
     }
@@ -248,8 +327,14 @@ const Layout = () => {
               }
             );
             setSessionLayout(response.data);
+            console.log(response);
             setError(null);
           } catch (err) {
+            if (axios.isAxiosError(err) && err.response?.status === 401) {
+              localStorage.removeItem("teacherToken");
+              window.location.href = "/teacher/login";
+              return;
+            }
             setError("야자 신청 현황을 불러오는 중 오류가 발생했어요.");
             console.error(err);
           } finally {
@@ -259,6 +344,11 @@ const Layout = () => {
         fetchSessionLayout();
       }
     } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        localStorage.removeItem("teacherToken");
+        window.location.href = "/teacher/login";
+        return;
+      }
       setError("메모 추가 중 오류가 발생했어요.");
       console.error(err);
     }
@@ -346,9 +436,11 @@ const Layout = () => {
                                   seat.student.class &&
                                   seat.student.number
                                     ? `${seat.student.grade}-${seat.student.class}-${seat.student.number}`
-                                    : ""}
+                                    : ""}{" "}
+                                  {seat.student.name || ""}
                                 </div>
-                                <div>{seat.student.name || ""}</div>
+                                <div>{seat.student.issue_type || ""}</div>
+                                <div>{seat.student.note || ""}</div>
                               </div>
                             )}
                           </>
@@ -386,7 +478,7 @@ const Layout = () => {
               >
                 <option value="">특이사항을 선택하세요</option>
                 {issueTypes.map((issue) => (
-                  <option key={issue.id} value={issue.id}>
+                  <option key={issue.id} value={issue.description}>
                     {issue.description}
                   </option>
                 ))}

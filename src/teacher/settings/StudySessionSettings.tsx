@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface StudyRoom {
   id: string;
@@ -42,6 +43,25 @@ const StudySessionSettings = () => {
     minutes_after: 0,
     room_id: "",
   });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem("teacherToken");
+          navigate("/teacher/login");
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, [navigate]);
 
   useEffect(() => {
     fetchStudySessions();
@@ -249,10 +269,10 @@ const StudySessionSettings = () => {
   const renderSessionForm = () => {
     return (
       <div>
-        <h3>{isCreating ? "야자 세션 생성" : "야자 세션 수정"}</h3>
+        <h3>{isCreating ? "야자 생성" : "야자 수정"}</h3>
         <div>
           <label>
-            야자 세션 이름:
+            야자 이름:
             <input
               type="text"
               name="name"

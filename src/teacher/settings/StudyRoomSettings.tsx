@@ -31,6 +31,23 @@ const StudyRoomSettings = () => {
   );
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem("teacherToken");
+          navigate("/teacher/login");
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, [navigate]);
+
   const api = axios.create({
     baseURL: `${import.meta.env.VITE_API_URL}/studyroom`,
     headers: {
@@ -162,6 +179,13 @@ const StudyRoomSettings = () => {
           },
         }
       );
+
+      if (response.status === 401) {
+        localStorage.removeItem("teacherToken");
+        navigate("/teacher/login");
+        return;
+      }
+
       const data = await response.json();
       setStudyrooms(data.studyrooms);
     } catch (err) {
