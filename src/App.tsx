@@ -14,6 +14,8 @@ import StudySessionSetting from "./teacher/settings/StudySessionSettings";
 import Layout from "./Layout";
 import Register from "./student/Register";
 import Settings from "./teacher/Settings";
+import Teacher from "./teacher/Teacher";
+
 function App() {
   const [count, setCount] = useState(0);
 
@@ -25,6 +27,7 @@ function App() {
         <Route path="/" element={<Layout />} />
         <Route path="/:location/:col_num/:row_num" element={<Register />} />
         <Route path="/teacher/settings" element={<Settings />} />
+        <Route path="/teacher" element={<Teacher />} />
       </Routes>
     </Router>
   );
