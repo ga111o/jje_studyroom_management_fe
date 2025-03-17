@@ -368,6 +368,12 @@ const Register = () => {
 
         {step === 1 ? renderStudentInfoForm() : renderSessionSelectionForm()}
       </div>
+
+      <div className="home-button-container">
+        <a href="/" className="btn btn-secondary home-button">
+          홈으로 이동
+        </a>
+      </div>
     </div>
   );
 };

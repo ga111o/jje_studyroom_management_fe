@@ -195,6 +195,24 @@
   text-align: center;
 }
 
+/* 홈 버튼 스타일 */
+.home-button-container {
+  margin-top: 1.5rem;
+  text-align: center;
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+.home-button {
+  display: inline-block;
+  text-decoration: none;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #666;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 640px) {
   .form-row {
