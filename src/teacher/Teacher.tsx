@@ -173,6 +173,7 @@ const Teacher: React.FC = () => {
 
       const layoutData: LayoutResponse = response.data;
       setSeatLayout(layoutData.layout);
+      console.log(seatLayout);
       setLayoutResponse(layoutData);
     } catch (err) {
       setError(
