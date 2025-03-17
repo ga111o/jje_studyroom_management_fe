@@ -5,6 +5,7 @@ import { QRCodeSVG } from "qrcode.react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { createRoot } from "react-dom/client";
+import "./StudyRoomSettings.css";
 
 interface Studyroom {
   id: string;
@@ -269,17 +270,17 @@ const StudyRoomSettings = () => {
     setCustomLayout(newLayout);
   };
 
-  const resizeLayout = () => {
-    const newLayout: string[][] = [];
-    for (let i = 0; i < rows; i++) {
-      const row: string[] = [];
-      for (let j = 0; j < cols; j++) {
-        row.push(customLayout[i]?.[j] || "");
-      }
-      newLayout.push(row);
-    }
-    setCustomLayout(newLayout);
-  };
+  // const resizeLayout = () => {
+  //   const newLayout: string[][] = [];
+  //   for (let i = 0; i < rows; i++) {
+  //     const row: string[] = [];
+  //     for (let j = 0; j < cols; j++) {
+  //       row.push(customLayout[i]?.[j] || "");
+  //     }
+  //     newLayout.push(row);
+  //   }
+  //   setCustomLayout(newLayout);
+  // };
 
   const addRow = () => {
     const newRow = Array(cols).fill("");
@@ -328,220 +329,301 @@ const StudyRoomSettings = () => {
   }, [studyrooms]);
 
   return (
-    <div className="settings-container">
-      <h1>야자실 관리</h1>
+    <div className="study-room-settings">
+      <div className="settings-section">
+        <h3 className="section-title">새 야자실 추가</h3>
+        <p className="settings-description">
+          야자실 이름과 레이아웃을 설정하여 새로운 야자실을 생성합니다.
+        </p>
 
-      {error && <div className="error-message">{error}</div>}
+        {error && <div className="error-message">{error}</div>}
 
-      <div className="create-form">
-        <h2>새 야자실 추가</h2>
         <div className="form-group">
+          <label htmlFor="room-name">야자실 이름</label>
           <input
+            id="room-name"
             type="text"
             value={newRoomName}
             onChange={(e) => setNewRoomName(e.target.value)}
-            placeholder="야자실 이름"
+            placeholder="야자실 이름을 입력하세요"
           />
         </div>
 
-        <div className="layout-size-controls">
-          <div className="form-group">
-            <label>행 수:</label>
-            <input
-              type="number"
-              min="1"
-              value={rows}
-              onChange={(e) =>
-                setRows(Math.max(1, parseInt(e.target.value) || 1))
-              }
-            />
-            <div className="row-controls">
-              <button type="button" onClick={addRow}>
-                +
-              </button>
-              <button type="button" onClick={removeRow} disabled={rows <= 1}>
-                -
-              </button>
+        <div className="layout-controls">
+          <h4>레이아웃 크기 설정</h4>
+          <div className="layout-size-controls">
+            <div className="form-group">
+              <label>행 수:</label>
+              <div className="number-control">
+                <input
+                  type="number"
+                  min="1"
+                  value={rows}
+                  onChange={(e) =>
+                    setRows(Math.max(1, parseInt(e.target.value) || 1))
+                  }
+                />
+                <div className="control-buttons">
+                  <button
+                    type="button"
+                    className="control-button"
+                    onClick={addRow}
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    className="control-button"
+                    onClick={removeRow}
+                    disabled={rows <= 1}
+                  >
+                    -
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>열 수:</label>
+              <div className="number-control">
+                <input
+                  type="number"
+                  min="1"
+                  value={cols}
+                  onChange={(e) =>
+                    setColumns(Math.max(1, parseInt(e.target.value) || 1))
+                  }
+                />
+                <div className="control-buttons">
+                  <button
+                    type="button"
+                    className="control-button"
+                    onClick={addColumn}
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    className="control-button"
+                    onClick={removeColumn}
+                    disabled={cols <= 1}
+                  >
+                    -
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="form-group">
-            <label>열 수:</label>
-            <input
-              type="number"
-              min="1"
-              value={cols}
-              onChange={(e) =>
-                setColumns(Math.max(1, parseInt(e.target.value) || 1))
-              }
-            />
-            <div className="column-controls">
-              <button type="button" onClick={addColumn}>
-                +
-              </button>
-              <button type="button" onClick={removeColumn} disabled={cols <= 1}>
-                -
-              </button>
-            </div>
-          </div>
-          <button onClick={resizeLayout}>크기 조정</button>
         </div>
 
         <div className="layout-editor">
-          <h3>레이아웃 설정</h3>
-          <p>좌석 번호를 입력해주세요. 통로는 빈칸으로 두세요.</p>
-          <table className="layout-table">
-            <tbody>
-              {customLayout.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {row.map((cell, colIndex) => (
-                    <td key={colIndex}>
-                      <input
-                        type="text"
-                        value={cell}
-                        onChange={(e) =>
-                          updateLayoutCell(rowIndex, colIndex, e.target.value)
-                        }
-                        placeholder="통로"
-                      />
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <h4>좌석 레이아웃</h4>
+          <p className="layout-help">
+            좌석 번호를 입력해주세요. 통로는 빈칸으로 두세요.
+          </p>
+          <div className="layout-table-container">
+            <table className="layout-table">
+              <tbody>
+                {customLayout.map((row, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {row.map((cell, colIndex) => (
+                      <td key={colIndex}>
+                        <input
+                          className="layout-table-input"
+                          type="text"
+                          value={cell}
+                          onChange={(e) =>
+                            updateLayoutCell(rowIndex, colIndex, e.target.value)
+                          }
+                          placeholder="통로"
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <button onClick={createStudyroom}>추가</button>
+        <div className="form-actions">
+          <button className="primary-button" onClick={createStudyroom}>
+            야자실 추가
+          </button>
+        </div>
       </div>
 
-      <div className="studyroom-list">
-        <h2>야자실 목록</h2>
+      <div className="settings-section">
+        <h3 className="section-title">야자실 목록</h3>
+        <p className="settings-description">
+          등록된 야자실을 관리하고 QR 코드를 생성할 수 있습니다.
+        </p>
+
         {studyrooms.length === 0 ? (
-          <p>등록된 야자실이 없습니다.</p>
+          <p className="empty-state">등록된 야자실이 없습니다.</p>
         ) : (
-          <ul>
+          <ul className="studyroom-list">
             {studyrooms.map((room) => (
-              <li key={room.id}>
+              <li key={room.id} className="studyroom-item">
                 {editingRoom && editingRoom.id === room.id ? (
                   <div className="edit-form">
-                    <input
-                      type="text"
-                      value={editingRoom.name}
-                      onChange={(e) =>
-                        setEditingRoom({ ...editingRoom, name: e.target.value })
-                      }
-                    />
+                    <div className="form-group">
+                      <label>야자실 이름</label>
+                      <input
+                        type="text"
+                        value={editingRoom.name}
+                        onChange={(e) =>
+                          setEditingRoom({
+                            ...editingRoom,
+                            name: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
 
-                    <div className="layout-editor">
-                      <h3>레이아웃 수정</h3>
+                    <div className="layout-editor edit-mode">
+                      <h4>레이아웃 수정</h4>
                       <div className="layout-size-controls">
                         <div className="form-group">
                           <label>행 수:</label>
-                          <input
-                            type="number"
-                            min="1"
-                            value={rows}
-                            onChange={(e) =>
-                              setRows(
-                                Math.max(1, parseInt(e.target.value) || 1)
-                              )
-                            }
-                          />
-                          <div className="row-controls">
-                            <button type="button" onClick={addRow}>
-                              +
-                            </button>
-                            <button
-                              type="button"
-                              onClick={removeRow}
-                              disabled={rows <= 1}
-                            >
-                              -
-                            </button>
+                          <div className="number-control">
+                            <input
+                              type="number"
+                              min="1"
+                              value={rows}
+                              onChange={(e) =>
+                                setRows(
+                                  Math.max(1, parseInt(e.target.value) || 1)
+                                )
+                              }
+                            />
+                            <div className="control-buttons">
+                              <button
+                                type="button"
+                                className="control-button"
+                                onClick={addRow}
+                              >
+                                +
+                              </button>
+                              <button
+                                type="button"
+                                className="control-button"
+                                onClick={removeRow}
+                                disabled={rows <= 1}
+                              >
+                                -
+                              </button>
+                            </div>
                           </div>
                         </div>
+
                         <div className="form-group">
                           <label>열 수:</label>
-                          <input
-                            type="number"
-                            min="1"
-                            value={cols}
-                            onChange={(e) =>
-                              setColumns(
-                                Math.max(1, parseInt(e.target.value) || 1)
-                              )
-                            }
-                          />
-                          <div className="column-controls">
-                            <button type="button" onClick={addColumn}>
-                              +
-                            </button>
-                            <button
-                              type="button"
-                              onClick={removeColumn}
-                              disabled={cols <= 1}
-                            >
-                              -
-                            </button>
+                          <div className="number-control">
+                            <input
+                              type="number"
+                              min="1"
+                              value={cols}
+                              onChange={(e) =>
+                                setColumns(
+                                  Math.max(1, parseInt(e.target.value) || 1)
+                                )
+                              }
+                            />
+                            <div className="control-buttons">
+                              <button
+                                type="button"
+                                className="control-button"
+                                onClick={addColumn}
+                              >
+                                +
+                              </button>
+                              <button
+                                type="button"
+                                className="control-button"
+                                onClick={removeColumn}
+                                disabled={cols <= 1}
+                              >
+                                -
+                              </button>
+                            </div>
                           </div>
                         </div>
-                        <button onClick={resizeLayout}>크기 조정</button>
                       </div>
 
-                      <table className="layout-table">
-                        <tbody>
-                          {customLayout.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
-                              {row.map((cell, colIndex) => (
-                                <td key={colIndex}>
-                                  <input
-                                    type="text"
-                                    value={cell}
-                                    onChange={(e) =>
-                                      updateLayoutCell(
-                                        rowIndex,
-                                        colIndex,
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder="통로"
-                                  />
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                      <div className="layout-table-container">
+                        <table className="layout-table">
+                          <tbody>
+                            {customLayout.map((row, rowIndex) => (
+                              <tr key={rowIndex}>
+                                {row.map((cell, colIndex) => (
+                                  <td key={colIndex}>
+                                    <input
+                                      type="text"
+                                      value={cell}
+                                      onChange={(e) =>
+                                        updateLayoutCell(
+                                          rowIndex,
+                                          colIndex,
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="통로"
+                                    />
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
 
-                    <button
-                      onClick={() => {
-                        setEditingRoom({
-                          ...editingRoom,
-                          layout: customLayout,
-                        });
-                        updateStudyroom();
-                      }}
-                    >
-                      저장
-                    </button>
-                    <button onClick={() => setEditingRoom(null)}>취소</button>
+                    <div className="form-actions">
+                      <button
+                        className="primary-button"
+                        onClick={() => {
+                          setEditingRoom({
+                            ...editingRoom,
+                            layout: customLayout,
+                          });
+                          updateStudyroom();
+                        }}
+                      >
+                        저장
+                      </button>
+                      <button
+                        className="secondary-button"
+                        onClick={() => setEditingRoom(null)}
+                      >
+                        취소
+                      </button>
+                    </div>
                   </div>
                 ) : (
-                  <div className="room-item">
-                    <span>{room.name}</span>
-                    <div className="actions">
-                      <button onClick={() => startEditing(room)}>수정</button>
-                      <button onClick={() => deleteStudyroom(room.id)}>
+                  <div className="room-details">
+                    <h4 className="room-name">{room.name}</h4>
+                    <div className="room-actions">
+                      <button
+                        className="action-button edit-button"
+                        onClick={() => startEditing(room)}
+                      >
+                        수정
+                      </button>
+                      <button
+                        className="action-button delete-button"
+                        onClick={() => deleteStudyroom(room.id)}
+                      >
                         삭제
                       </button>
                       <button
+                        className="action-button qr-button"
                         onClick={() => downloadAllQRCodes(room)}
                         disabled={downloadingRoomId === room.id}
                       >
                         {downloadingRoomId === room.id
                           ? "QR 코드 생성 중..."
-                          : "모든 QR 코드 다운로드"}
+                          : "QR 코드 다운로드"}
                       </button>
                     </div>
                   </div>

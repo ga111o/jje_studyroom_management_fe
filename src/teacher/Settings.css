@@ -1,0 +1,136 @@
+/* Settings Page Styles */
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  min-width: 1200px;
+  margin: 0 auto;
+}
+
+.settings-description {
+  color: var(--light-text);
+  margin-top: 0.5rem;
+}
+
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.settings-navigation {
+  display: flex;
+  min-width: 250px;
+  max-width: 250px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--background-color);
+}
+
+.settings-tab-button {
+  background: none;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  color: var(--light-text);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 3px solid transparent;
+}
+
+.settings-tab-button:hover {
+  color: var(--primary-color);
+  background-color: rgba(52, 152, 219, 0.05);
+}
+
+.settings-tab-button.active {
+  color: var(--primary-color);
+  border-bottom: 3px solid var(--primary-color);
+  font-weight: 500;
+}
+
+.settings-tab-button i {
+  font-size: 1.2rem;
+}
+
+.settings-content-wrapper {
+  padding: 2rem;
+}
+
+.settings-content-card {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  min-height: 400px;
+}
+
+.icon-room:before {
+  content: "🏢";
+}
+
+.icon-session:before {
+  content: "📅";
+}
+
+.icon-issue:before {
+  content: "📋";
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .settings-navigation {
+    flex-direction: column;
+  }
+
+  .settings-tab-button {
+    width: 100%;
+    justify-content: flex-start;
+    border-left: 3px solid transparent;
+    border-bottom: none;
+  }
+
+  .settings-tab-button.active {
+    border-left: 3px solid var(--primary-color);
+    border-bottom: none;
+  }
+
+  .settings-content-wrapper {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .settings-container {
+    flex-direction: row;
+  }
+
+  .settings-navigation {
+    flex-direction: column;
+    border-right: 1px solid var(--border-color);
+    border-bottom: none;
+    width: 250px;
+  }
+
+  .settings-tab-button {
+    justify-content: flex-start;
+    border-left: 3px solid transparent;
+    border-bottom: none;
+    width: 100%;
+  }
+
+  .settings-tab-button.active {
+    border-left: 3px solid var(--primary-color);
+    border-bottom: none;
+  }
+
+  .settings-content-wrapper {
+    flex: 1;
+  }
+}

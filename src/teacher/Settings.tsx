@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import IssueSettings from "./settings/IssueSettings";
 import StudyRoomSettings from "./settings/StudyRoomSettings";
 import StudySessionSettings from "./settings/StudySessionSettings";
+import "./Settings.css";
 
 type SettingTab = "studyRoom" | "studySession" | "issue";
 
@@ -22,31 +23,46 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="settings-container">
-      <h1>설정</h1>
-
-      <div className="settings-tabs">
-        <button
-          className={activeTab === "studyRoom" ? "active" : ""}
-          onClick={() => setActiveTab("studyRoom")}
-        >
-          야자실 관리
-        </button>
-        <button
-          className={activeTab === "studySession" ? "active" : ""}
-          onClick={() => setActiveTab("studySession")}
-        >
-          야자 관리
-        </button>
-        <button
-          className={activeTab === "issue" ? "active" : ""}
-          onClick={() => setActiveTab("issue")}
-        >
-          특이사항 목록 관리
-        </button>
+    <div className="settings-page">
+      <div className="page-header">
+        <h2>설정</h2>
       </div>
 
-      <div className="settings-content">{renderTabContent()}</div>
+      <div className="settings-container">
+        <div className="settings-navigation">
+          <button
+            className={`settings-tab-button ${
+              activeTab === "studyRoom" ? "active" : ""
+            }`}
+            onClick={() => setActiveTab("studyRoom")}
+          >
+            <i className="icon-room"></i>
+            <span>야자실 관리</span>
+          </button>
+          <button
+            className={`settings-tab-button ${
+              activeTab === "studySession" ? "active" : ""
+            }`}
+            onClick={() => setActiveTab("studySession")}
+          >
+            <i className="icon-session"></i>
+            <span>야자 관리</span>
+          </button>
+          <button
+            className={`settings-tab-button ${
+              activeTab === "issue" ? "active" : ""
+            }`}
+            onClick={() => setActiveTab("issue")}
+          >
+            <i className="icon-issue"></i>
+            <span>특이사항 목록 관리</span>
+          </button>
+        </div>
+
+        <div className="settings-content-wrapper">
+          <div className="settings-content-card">{renderTabContent()}</div>
+        </div>
+      </div>
     </div>
   );
 };
