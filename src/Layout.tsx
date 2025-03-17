@@ -355,8 +355,7 @@ const Layout = () => {
               </option>
               {sessions.map((session) => (
                 <option key={session.id} value={session.id}>
-                  {session.name} ({session.start_time.substring(11, 16)} -{" "}
-                  {session.end_time.substring(11, 16)})
+                  {session.name} {session.start_time} - {session.end_time}
                 </option>
               ))}
             </select>

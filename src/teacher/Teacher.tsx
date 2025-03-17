@@ -293,14 +293,20 @@ const Teacher: React.FC = () => {
     <div className="teacher-dashboard">
       <div className="page-header">
         <div className="page-header-left">
-          <h2>야자 관리</h2>
+          <h2>야자 관리</h2>{" "}
           <button
-            className="home-button"
-            onClick={() => (window.location.href = "/")}
+            className="settings-button"
+            onClick={() => (window.location.href = "/teacher/settings")}
           >
-            홈으로 이동
+            야자 설정
           </button>
         </div>
+        <button
+          className="home-button"
+          onClick={() => (window.location.href = "/")}
+        >
+          홈으로 이동
+        </button>
       </div>
 
       {sessions.length === 0 ? (

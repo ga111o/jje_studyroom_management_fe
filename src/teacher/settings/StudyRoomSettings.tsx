@@ -332,9 +332,7 @@ const StudyRoomSettings = () => {
     <div className="study-room-settings">
       <div className="settings-section">
         <h3 className="section-title">새 야자실 추가</h3>
-        <p className="settings-description">
-          야자실 이름과 레이아웃을 설정하여 새로운 야자실을 생성합니다.
-        </p>
+        <p className="settings-description">야자실 이름과 배치를 설정합니다.</p>
 
         {error && <div className="error-message">{error}</div>}
 

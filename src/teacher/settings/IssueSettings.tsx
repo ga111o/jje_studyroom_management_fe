@@ -165,7 +165,7 @@ const IssueSettings: React.FC = () => {
           onSubmit={editingId ? handleUpdateIssueType : handleCreateIssueType}
         >
           <div className="issue-form-group">
-            <label htmlFor="description">특이사항 목록:</label>
+            <label htmlFor="description">특이사항 목록</label>
             <input
               type="text"
               id="description"
