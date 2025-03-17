@@ -171,7 +171,12 @@ const StudyRoomSettings = () => {
 
   const fetchStudyrooms = async () => {
     try {
-      console.log(localStorage.getItem("teacherToken"));
+      const token = localStorage.getItem("teacherToken");
+
+      if (token === null) {
+        window.location.href = "/teacher/login";
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/studyroom/`,
         {
@@ -180,12 +185,6 @@ const StudyRoomSettings = () => {
           },
         }
       );
-
-      if (response.status === 401) {
-        localStorage.removeItem("teacherToken");
-        navigate("/teacher/login");
-        return;
-      }
 
       const data = await response.json();
       setStudyrooms(data.studyrooms);

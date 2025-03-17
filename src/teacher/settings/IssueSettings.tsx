@@ -28,6 +28,10 @@ const IssueSettings: React.FC = () => {
       );
       setIssueTypes(response.data);
       setError(null);
+      if (response.status === 401) {
+        localStorage.removeItem("teacherToken");
+        window.location.href = "/teacher/login";
+      }
     } catch (err) {
       setError("특이사항 목록을 불러오는데 실패했습니다.");
       console.error(err);

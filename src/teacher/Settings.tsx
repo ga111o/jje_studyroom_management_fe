@@ -4,6 +4,7 @@ import StudyRoomSettings from "./settings/StudyRoomSettings";
 import StudySessionSettings from "./settings/StudySessionSettings";
 import "./Settings.css";
 import { useNavigate } from "react-router-dom";
+
 type SettingTab = "studyRoom" | "studySession" | "issue";
 
 const Settings: React.FC = () => {

@@ -141,6 +141,11 @@ const StudySessionSettings = () => {
           },
         }
       );
+      if (response.status === 401) {
+        localStorage.removeItem("teacherToken");
+        window.location.href = "/teacher/login";
+      }
+
       console.log(response);
 
       fetchStudySessions();

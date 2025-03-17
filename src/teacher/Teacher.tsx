@@ -79,7 +79,12 @@ const Teacher: React.FC = () => {
     const fetchSessions = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/session/`
+          `${import.meta.env.VITE_API_URL}/session/`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("teacherToken")}`,
+            },
+          }
         );
         if (!response) {
           throw new Error("야자 데이터를 불러오는데 실패했습니다.");
@@ -111,11 +116,23 @@ const Teacher: React.FC = () => {
   // 야자 날짜 불러오기 함수
   const fetchSessionDates = async (sessionId: number) => {
     setLoadingDates(true);
+    if (localStorage.getItem("teacherToken") === null) {
+      window.location.href = "/teacher/login";
+      return;
+    }
+
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/session/${sessionId}/dates`
+      // Use our api instance with interceptors
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/session/${sessionId}/dates`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("teacherToken")}`,
+          },
+        }
       );
-      setSessionDates(response.data);
+      const data = await response.json();
+      setSessionDates(data);
     } catch (err) {
       setError(
         err instanceof Error
