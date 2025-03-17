@@ -130,7 +130,7 @@ const Teacher: React.FC = () => {
   // 야자 클릭 핸들러
   const handleSessionClick = (sessionId: number) => {
     if (selectedSessionId === sessionId) {
-      // 이미 선택된 야자을 다시 클릭하면 선택 해제
+      // 이미 선택된 야자를 다시 클릭하면 선택 해제
       setSelectedSessionId(null);
       setSessionDates([]);
     } else {

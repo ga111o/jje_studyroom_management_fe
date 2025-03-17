@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import "./Register.css";
 
 interface StudySession {
   id: string;
@@ -213,9 +214,9 @@ const Register = () => {
   };
 
   const renderStudentInfoForm = () => (
-    <form onSubmit={handleStudentInfoSubmit}>
-      <div className="mb-4">
-        <label className="block text-gray-700 mb-2" htmlFor="name">
+    <form onSubmit={handleStudentInfoSubmit} className="student-form">
+      <div className="form-group">
+        <label className="form-label" htmlFor="name">
           이름
         </label>
         <input
@@ -224,14 +225,14 @@ const Register = () => {
           name="name"
           value={studentInfo.name}
           onChange={handleStudentInfoChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+          className="form-input"
           required
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="block text-gray-700 mb-2" htmlFor="grade">
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label" htmlFor="grade">
             학년
           </label>
           <select
@@ -239,7 +240,7 @@ const Register = () => {
             name="grade"
             value={studentInfo.grade}
             onChange={handleStudentInfoChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            className="form-select"
             required
           >
             <option value={1}>1학년</option>
@@ -248,8 +249,8 @@ const Register = () => {
           </select>
         </div>
 
-        <div>
-          <label className="block text-gray-700 mb-2" htmlFor="class_number">
+        <div className="form-group">
+          <label className="form-label" htmlFor="class_number">
             반
           </label>
           <input
@@ -260,13 +261,13 @@ const Register = () => {
             max={20}
             value={studentInfo.class_number}
             onChange={handleStudentInfoChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            className="form-input"
             required
           />
         </div>
 
-        <div>
-          <label className="block text-gray-700 mb-2" htmlFor="student_number">
+        <div className="form-group">
+          <label className="form-label" htmlFor="student_number">
             번호
           </label>
           <input
@@ -277,30 +278,27 @@ const Register = () => {
             max={40}
             value={studentInfo.student_number}
             onChange={handleStudentInfoChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            className="form-input"
             required
           />
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-      >
+      <button type="submit" className="btn btn-primary">
         다음
       </button>
     </form>
   );
 
   const renderSessionSelectionForm = () => (
-    <form onSubmit={handleSubmit}>
-      <div className="mb-6">
-        <p className="mb-2 font-medium">
+    <form onSubmit={handleSubmit} className="session-form">
+      <div className="form-group">
+        <p className="student-info">
           {studentInfo.grade}학년 {studentInfo.class_number}반{" "}
           {studentInfo.student_number}번 {studentInfo.name}
         </p>
 
-        <label className="block text-gray-700 mb-2" htmlFor="session_id">
+        <label className="form-label" htmlFor="session_id">
           신청 야자 선택
         </label>
 
@@ -310,10 +308,10 @@ const Register = () => {
             name="session_id"
             value={selectedSession}
             onChange={handleSessionChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
+            className="form-select"
             required
           >
-            <option value="">야자을 선택하세요</option>
+            <option value="">야자를 선택하세요</option>
             {filteredSessions.map((session) => (
               <option key={session.id} value={session.id}>
                 {session.name} ({session.start_time} - {session.end_time})
@@ -321,15 +319,15 @@ const Register = () => {
             ))}
           </select>
         ) : (
-          <p className="text-red-500 mb-4">이용 가능한 야자가 없습니다.</p>
+          <p className="no-sessions-message">이용 가능한 야자가 없습니다.</p>
         )}
       </div>
 
-      <div className="flex space-x-4">
+      <div className="form-buttons">
         <button
           type="button"
           onClick={() => setStep(1)}
-          className="flex-1 py-2 px-4 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+          className="btn btn-secondary"
         >
           정보 수정하기
         </button>
@@ -337,8 +335,8 @@ const Register = () => {
         <button
           type="submit"
           disabled={loading || !selectedSession}
-          className={`flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ${
-            loading || !selectedSession ? "opacity-70 cursor-not-allowed" : ""
+          className={`btn btn-primary ${
+            loading || !selectedSession ? "btn-disabled" : ""
           }`}
         >
           {loading ? "신청 중..." : "야자 신청하기"}
@@ -348,22 +346,28 @@ const Register = () => {
   );
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">야자 신청</h2>
+    <div className="register-container">
+      <h2 className="page-title">야자 신청</h2>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-          {error}
+      {error && <div className="alert alert-error">{error}</div>}
+
+      {success && <div className="alert alert-success">{success}</div>}
+
+      <div className="form-card">
+        <div className="form-progress">
+          <div
+            className={`progress-step ${step === 1 ? "active" : "completed"}`}
+          >
+            1. 학생 정보
+          </div>
+          <div className="progress-line"></div>
+          <div className={`progress-step ${step === 2 ? "active" : ""}`}>
+            2. 야자 선택
+          </div>
         </div>
-      )}
 
-      {success && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
-          {success}
-        </div>
-      )}
-
-      {step === 1 ? renderStudentInfoForm() : renderSessionSelectionForm()}
+        {step === 1 ? renderStudentInfoForm() : renderSessionSelectionForm()}
+      </div>
     </div>
   );
 };
