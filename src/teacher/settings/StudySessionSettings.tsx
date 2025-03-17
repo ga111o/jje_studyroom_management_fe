@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./StudySessionSettings.css";
 
 interface StudyRoom {
   id: string;
@@ -266,209 +267,255 @@ const StudySessionSettings = () => {
     setIsCreating(false);
   };
 
-  const renderSessionForm = () => {
-    return (
-      <div>
-        <h3>{isCreating ? "야자 생성" : "야자 수정"}</h3>
-        <div>
-          <label>
-            야자 이름:
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-              placeholder="1학년 1차 야자"
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            야자 시작 시간:
-            <input
-              type="time"
-              name="start_time"
-              value={formData.start_time}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            야자 종료 시간:
-            <input
-              type="time"
-              name="end_time"
-              value={formData.end_time}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              name="one_grade"
-              checked={formData.one_grade}
-              onChange={handleInputChange}
-            />
-            1학년 야자
-          </label>
-        </div>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              name="two_grade"
-              checked={formData.two_grade}
-              onChange={handleInputChange}
-            />
-            2학년 야자
-          </label>
-        </div>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              name="three_grade"
-              checked={formData.three_grade}
-              onChange={handleInputChange}
-            />
-            3학년 야자
-          </label>
-        </div>
-        <div>
-          <label>
-            야자 신청 가능 시간 (야자 시작 n분 전부터)
-            <input
-              type="number"
-              name="minutes_before"
-              value={formData.minutes_before}
-              onChange={handleInputChange}
-              min="0"
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            야자 신청 가능 시간 (야자 시작 n분 후까지)
-            <input
-              type="number"
-              name="minutes_after"
-              value={formData.minutes_after}
-              onChange={handleInputChange}
-              min="0"
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            야자실:
-            <select
-              name="room_id"
-              value={formData.room_id}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">야자실 선택</option>
-              {studyRooms.map((room) => (
-                <option key={room.id} value={room.id}>
-                  {room.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div>
-          <button
-            onClick={isCreating ? handleCreateSession : handleUpdateSession}
-          >
-            {isCreating ? "Create" : "Update"}
-          </button>
-          <button onClick={cancelAction}>Cancel</button>
-        </div>
-      </div>
-    );
-  };
-
-  const renderSessionDetails = () => {
-    if (!selectedSession) return null;
-
-    return (
-      <div>
-        <h3>Study Session Details</h3>
-        <p>
-          <strong>Name:</strong> {selectedSession.name}
-        </p>
-        <p>
-          <strong>Start Time:</strong> {selectedSession.start_time}
-        </p>
-        <p>
-          <strong>End Time:</strong> {selectedSession.end_time}
-        </p>
-        <p>
-          <strong>Grades:</strong>
-          {[
-            selectedSession.one_grade ? "1st" : null,
-            selectedSession.two_grade ? "2nd" : null,
-            selectedSession.three_grade ? "3rd" : null,
-          ]
-            .filter(Boolean)
-            .join(", ")}
-        </p>
-        <p>
-          <strong>Minutes Before:</strong> {selectedSession.minutes_before}
-        </p>
-        <p>
-          <strong>Minutes After:</strong> {selectedSession.minutes_after}
-        </p>
-        <p>
-          <strong>Room:</strong> {selectedSession.room.name}
-        </p>
-
-        <div>
-          <button onClick={startEditing}>Edit</button>
-          <button onClick={handleDeleteSession}>Delete</button>
-        </div>
-      </div>
-    );
-  };
-
-  const renderSessionList = () => {
-    return (
-      <div>
-        <h3>Study Sessions</h3>
-        {studySessions.length === 0 ? (
-          <p>No study sessions found.</p>
-        ) : (
-          <ul>
-            {studySessions.map((session) => (
-              <li
-                key={session.id}
-                onClick={() => handleSelectSession(session.id)}
-              >
-                {session.name} - {session.room.name}
-              </li>
-            ))}
-          </ul>
-        )}
-        <button onClick={startCreating}>Create New Session</button>
-      </div>
-    );
-  };
-
   return (
-    <div>
-      <h2>Study Session Settings</h2>
-      <div style={{ display: "flex" }}>
-        <div style={{ flex: 1 }}>{renderSessionList()}</div>
-        <div style={{ flex: 2 }}>
-          {isEditing || isCreating
-            ? renderSessionForm()
-            : renderSessionDetails()}
+    <div className="study-session-settings">
+      <h2 className="settings-title">야자 관리</h2>
+      <p className="settings-description">
+        야자 시간 및 대상 학년을 설정하세요.
+      </p>
+
+      <div className="settings-content">
+        <div className="session-list-container">
+          <div className="section-header">
+            <h3>야자 목록</h3>
+            <button className="create-button" onClick={startCreating}>
+              새 야자 추가
+            </button>
+          </div>
+
+          {studySessions.length === 0 ? (
+            <p className="empty-state">등록된 야자가 없습니다.</p>
+          ) : (
+            <ul className="session-list">
+              {studySessions.map((session) => (
+                <li
+                  key={session.id}
+                  className={`session-item ${
+                    selectedSession?.id === session.id ? "active" : ""
+                  }`}
+                  onClick={() => handleSelectSession(session.id)}
+                >
+                  <span className="session-name">{session.name}</span>
+                  <span className="session-room">{session.room.name}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="session-details-container">
+          {isEditing || isCreating ? (
+            <div className="session-form">
+              <h3 className="form-title">
+                {isCreating ? "야자 생성" : "야자 수정"}
+              </h3>
+
+              <div className="form-group">
+                <label className="form-label">
+                  야자 이름
+                  <input
+                    type="text"
+                    name="name"
+                    className="form-input"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="1학년 1차 야자"
+                  />
+                </label>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group half">
+                  <label className="form-label">
+                    시작 시간
+                    <input
+                      type="time"
+                      name="start_time"
+                      className="form-input"
+                      value={formData.start_time}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </label>
+                </div>
+
+                <div className="form-group half">
+                  <label className="form-label">
+                    종료 시간
+                    <input
+                      type="time"
+                      name="end_time"
+                      className="form-input"
+                      value={formData.end_time}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">대상 학년</label>
+                <div className="checkbox-group">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      name="one_grade"
+                      checked={formData.one_grade}
+                      onChange={handleInputChange}
+                    />
+                    <span>1학년</span>
+                  </label>
+
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      name="two_grade"
+                      checked={formData.two_grade}
+                      onChange={handleInputChange}
+                    />
+                    <span>2학년</span>
+                  </label>
+
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      name="three_grade"
+                      checked={formData.three_grade}
+                      onChange={handleInputChange}
+                    />
+                    <span>3학년</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group half">
+                  <label className="form-label">
+                    신청 가능 시간 (시작 전)
+                    <div className="input-with-unit">
+                      <input
+                        type="number"
+                        name="minutes_before"
+                        className="form-input"
+                        value={formData.minutes_before}
+                        onChange={handleInputChange}
+                        min="0"
+                      />
+                      <span className="input-unit">분</span>
+                    </div>
+                  </label>
+                </div>
+
+                <div className="form-group half">
+                  <label className="form-label">
+                    신청 가능 시간 (시작 후)
+                    <div className="input-with-unit">
+                      <input
+                        type="number"
+                        name="minutes_after"
+                        className="form-input"
+                        value={formData.minutes_after}
+                        onChange={handleInputChange}
+                        min="0"
+                      />
+                      <span className="input-unit">분</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  야자실
+                  <select
+                    name="room_id"
+                    className="form-select"
+                    value={formData.room_id}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">야자실 선택</option>
+                    {studyRooms.map((room) => (
+                      <option key={room.id} value={room.id}>
+                        {room.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className="form-actions">
+                <button
+                  className="primary-button"
+                  onClick={
+                    isCreating ? handleCreateSession : handleUpdateSession
+                  }
+                >
+                  {isCreating ? "생성하기" : "수정하기"}
+                </button>
+                <button className="secondary-button" onClick={cancelAction}>
+                  취소
+                </button>
+              </div>
+            </div>
+          ) : selectedSession ? (
+            <div className="session-detail">
+              <h3 className="detail-title">야자 상세 정보</h3>
+
+              <div className="detail-row">
+                <div className="detail-label">이름</div>
+                <div className="detail-value">{selectedSession.name}</div>
+              </div>
+
+              <div className="detail-row">
+                <div className="detail-label">시간</div>
+                <div className="detail-value">
+                  {selectedSession.start_time} ~ {selectedSession.end_time}
+                </div>
+              </div>
+
+              <div className="detail-row">
+                <div className="detail-label">대상 학년</div>
+                <div className="detail-value">
+                  {[
+                    selectedSession.one_grade ? "1학년" : null,
+                    selectedSession.two_grade ? "2학년" : null,
+                    selectedSession.three_grade ? "3학년" : null,
+                  ]
+                    .filter(Boolean)
+                    .join(", ")}
+                </div>
+              </div>
+
+              <div className="detail-row">
+                <div className="detail-label">신청 가능 시간</div>
+                <div className="detail-value">
+                  시작 {selectedSession.minutes_before}분 전 ~ 시작{" "}
+                  {selectedSession.minutes_after}분 후
+                </div>
+              </div>
+
+              <div className="detail-row">
+                <div className="detail-label">야자실</div>
+                <div className="detail-value">{selectedSession.room.name}</div>
+              </div>
+
+              <div className="detail-actions">
+                <button className="primary-button" onClick={startEditing}>
+                  수정
+                </button>
+                <button className="danger-button" onClick={handleDeleteSession}>
+                  삭제
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="empty-detail-state">
+              <p>좌측 목록에서 야자를 선택하거나 새 야자를 추가하세요.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
