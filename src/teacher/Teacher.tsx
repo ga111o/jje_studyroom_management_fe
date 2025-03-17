@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import SeatLayoutGrid, { SessionLayout } from "../SeatLayoutGrid";
 import * as XLSX from "xlsx";
+import "./Teacher.css";
 
 interface Room {
   id: number;
@@ -85,6 +86,7 @@ const Teacher: React.FC = () => {
         }
         const data: StudySessionsResponse = response.data;
         setSessions(data.study_sessions);
+        console.log(data.study_sessions);
         setLoading(false);
       } catch (err) {
         setError(
@@ -288,111 +290,154 @@ const Teacher: React.FC = () => {
   if (error) return <div>오류: {error}</div>;
 
   return (
-    <div>
-      <h1>야자 목록</h1>
-      {sessions.length === 0 ? (
-        <p>등록된 야자이 없습니다.</p>
-      ) : (
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th>야자</th>
-                <th>시작 시간</th>
-                <th>종료 시간</th>
-                <th>대상 학년</th>
-                <th>신청 가능 시간(시작 전 n분부터)</th>
-                <th>신청 가능 시간(시작 후 n분까지)</th>
-                <th>야자 장소</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sessions.map((session) => (
-                <tr
-                  key={session.id}
-                  onClick={() => handleSessionClick(session.id)}
-                  style={{
-                    cursor: "pointer",
-                    backgroundColor:
-                      selectedSessionId === session.id
-                        ? "#f0f0f0"
-                        : "transparent",
-                  }}
-                >
-                  <td>{session.name}</td>
-                  <td>{formatDateTime(session.start_time)}</td>
-                  <td>{formatDateTime(session.end_time)}</td>
-                  <td>{getGradeString(session)}</td>
-                  <td>{session.minutes_before}</td>
-                  <td>{session.minutes_after}</td>
-                  <td>{session.room.name}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="teacher-dashboard">
+      <div className="page-header">
+        <div className="page-header-left">
+          <h2>야자 관리</h2>
+          <button
+            className="home-button"
+            onClick={() => (window.location.href = "/")}
+          >
+            홈으로 이동
+          </button>
+        </div>
+      </div>
 
-          {selectedSessionId && (
-            <div className="session-dates">
-              <h2>야자 날짜</h2>
-              {loadingDates ? (
-                <p>날짜 로딩 중...</p>
-              ) : sessionDates.length > 0 ? (
-                <ul>
-                  {sessionDates.map((date, index) => (
-                    <li
-                      key={index}
-                      onClick={() => handleDateClick(date)}
-                      style={{
-                        cursor: "pointer",
-                        fontWeight:
-                          selectedDate &&
-                          selectedDate.year === date.year &&
-                          selectedDate.month === date.month &&
-                          selectedDate.date === date.date
-                            ? "bold"
-                            : "normal",
-                        backgroundColor:
-                          selectedDate &&
-                          selectedDate.year === date.year &&
-                          selectedDate.month === date.month &&
-                          selectedDate.date === date.date
-                            ? "#e0e0e0"
-                            : "transparent",
-                      }}
-                    >
-                      {formatDate(date)}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>등록된 날짜가 없습니다.</p>
-              )}
+      {sessions.length === 0 ? (
+        <div className="no-sessions">
+          <i className="fas fa-exclamation-circle"></i>
+          <p>등록된 야자가 없습니다.</p>
+        </div>
+      ) : (
+        <div className="dashboard-layout">
+          <div className="sessions-container">
+            <div className="card">
+              <div className="card-header">
+                <h3>야자 목록</h3>
+                <span className="info-badge">{sessions.length}개</span>
+              </div>
+              <div className="sessions-table-container">
+                <table className="sessions-table">
+                  <thead>
+                    <tr>
+                      <th>야자</th>
+                      <th>시작 시간</th>
+                      <th>종료 시간</th>
+                      <th>대상 학년</th>
+                      <th>신청 가능 시간</th>
+                      <th>야자 장소</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sessions.map((session) => (
+                      <tr
+                        key={session.id}
+                        onClick={() => handleSessionClick(session.id)}
+                        className={
+                          selectedSessionId === session.id ? "selected" : ""
+                        }
+                      >
+                        <td>{session.name}</td>
+                        <td>{session.start_time}</td>
+                        <td>{session.end_time}</td>
+                        <td>{getGradeString(session)}</td>
+                        <td>
+                          시작 {session.minutes_before}분 전 ~ 시작{" "}
+                          {session.minutes_after}분 후
+                        </td>
+                        <td>
+                          <span className="room-badge">
+                            {session.room.name}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
+
+            {selectedSessionId && (
+              <div className="card">
+                <div className="card-header">
+                  <h3>야자 날짜</h3>
+                  {!loadingDates && sessionDates.length > 0 && (
+                    <span className="info-badge">{sessionDates.length}일</span>
+                  )}
+                </div>
+                <div className="card-content">
+                  {loadingDates ? (
+                    <div className="loading-container">
+                      <div className="loading-spinner"></div>
+                      <p>날짜 로딩 중...</p>
+                    </div>
+                  ) : sessionDates.length > 0 ? (
+                    <div className="date-grid">
+                      {sessionDates.map((date, index) => (
+                        <div
+                          key={index}
+                          onClick={() => handleDateClick(date)}
+                          className={`date-item ${
+                            selectedDate &&
+                            selectedDate.year === date.year &&
+                            selectedDate.month === date.month &&
+                            selectedDate.date === date.date
+                              ? "selected"
+                              : ""
+                          }`}
+                        >
+                          {formatDate(date)}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <p>등록된 날짜가 없습니다.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {selectedDate && (
-            <div className="layout-container">
-              <h2>{formatDate(selectedDate)} 좌석 배치</h2>
-              {loadingLayout ? (
-                <p>좌석 레이아웃 로딩 중...</p>
-              ) : layoutResponse ? (
-                <>
-                  <div className="layout-actions">
+            <div className="card">
+              <div className="card-header">
+                <h3>{formatDate(selectedDate)} 좌석 배치</h3>
+                {layoutResponse && (
+                  <div className="header-actions">
                     <button
                       onClick={handleExcelDownload}
-                      className="excel-download-btn"
+                      className="primary-button"
                     >
                       엑셀로 다운로드
                     </button>
+                    <div className="registration-count">
+                      등록 인원:{" "}
+                      <strong>{layoutResponse.registration_count}명</strong>
+                    </div>
                   </div>
-                  <SeatLayoutGrid
-                    sessionLayout={layoutResponse as SessionLayout}
-                    handleStudentClick={handleStudentClick}
-                  />
-                </>
-              ) : (
-                <p>좌석 레이아웃을 불러올 수 없습니다.</p>
-              )}
+                )}
+              </div>
+              <div className="card-content">
+                {loadingLayout ? (
+                  <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>좌석 레이아웃 로딩 중...</p>
+                  </div>
+                ) : layoutResponse ? (
+                  <div className="layout-grid-container">
+                    <SeatLayoutGrid
+                      sessionLayout={layoutResponse as SessionLayout}
+                      handleStudentClick={handleStudentClick}
+                    />
+                  </div>
+                ) : (
+                  <div className="empty-state">
+                    <p>좌석 레이아웃을 불러올 수 없습니다.</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
