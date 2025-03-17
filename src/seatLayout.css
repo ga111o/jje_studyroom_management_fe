@@ -1,0 +1,147 @@
+/* Seat Layout Styles */
+.seat-layout-container {
+  width: auto;
+  overflow-x: auto;
+  overflow-y: auto;
+  overflow: visible;
+  max-height: 80vh; /* Add max height to enable vertical scrolling */
+  margin-bottom: 2rem;
+}
+
+.seat-layout-table {
+  min-width: min-content; /* Ensures table takes minimum width needed for content */
+  border-collapse: separate;
+  border-spacing: 1px;
+  table-layout: fixed;
+  margin: 0; /* Reset any margins */
+  width: auto; /* Add this to prevent table from expanding beyond needed width */
+}
+
+.layout-grid-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
+.seat-cell,
+.aisle-cell {
+  position: relative;
+  vertical-align: top;
+  transition: var(--transition);
+}
+
+.seat-cell {
+  border-radius: 3px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-background);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  min-height: 80px;
+  max-width: 80px;
+  max-height: 80px;
+  overflow: hidden;
+}
+
+.seat-cell:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transform: scale(1.03);
+}
+
+.aisle-cell {
+  width: 30px;
+  background-color: transparent;
+  border: none;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+}
+
+.seat-cell.occupied {
+  background-color: #e3f2fd;
+  border-color: var(--primary-color);
+}
+
+.seat-cell.empty {
+  background-color: #f5f5f5;
+  cursor: default;
+}
+
+.seat-content {
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+  height: 100%;
+}
+
+.seat-id {
+  position: absolute;
+  top: -3px;
+  left: 1px;
+  font-size: 0.8rem;
+  color: var(--light-text);
+  padding: 0;
+  border-radius: 10px;
+}
+
+.student-name {
+  font-weight: bold;
+  margin-top: 0px;
+  text-align: right;
+  font-size: 0.8rem;
+  margin-right: 5px;
+  margin-bottom: 0px;
+}
+
+.student-id {
+  text-align: right;
+  color: var(--light-text);
+  font-size: 0.9rem;
+  margin-top: -5px;
+  margin-right: 5px;
+}
+
+.student-issue,
+.student-note {
+  font-size: 0.8rem;
+  margin-top: 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+  text-align: left;
+}
+
+.student-issue {
+  color: #553243;
+}
+
+.student-note {
+  color: #345f7a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .seat-cell {
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    min-height: 80px;
+    max-width: 80px;
+    max-height: 80px;
+  }
+
+  .aisle-cell {
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+  }
+
+  .student-id {
+    font-size: 0.8rem;
+  }
+}

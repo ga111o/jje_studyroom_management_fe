@@ -321,82 +321,148 @@ const Layout = () => {
 
   return (
     <div className="layout-container">
-      <div className="header">
-        <button onClick={() => navigate("/teacher")}>설정</button>
-      </div>
-      <h2>야자 신청 현황</h2>
-      <h3>
-        ({yyyy}-{mm}-{dd})
-      </h3>
-
-      <div className="session-selector">
-        <select
-          id="session-select"
-          value={selectedSession || ""}
-          onChange={handleSessionChange}
-          disabled={loading}
-        >
-          <option value="" disabled>
-            야자를 선택하세요
-          </option>
-          {sessions.map((session) => (
-            <option key={session.id} value={session.id}>
-              {session.name} ({session.start_time.substring(11, 16)} -{" "}
-              {session.end_time.substring(11, 16)})
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {error && <div className="error-message">{error}</div>}
-
-      {loading && <div className="loading">로딩 중...</div>}
-
-      {selectedSession && !loading && sessionLayout && (
-        <div className="session-info">
-          <h3>
-            {sessions.find((s) => s.id === selectedSession)?.name} (
-            {sessions.find((s) => s.id === selectedSession)?.room.name})
-          </h3>
-          <p>신청 인원: {sessionLayout.registration_count}명</p>
-
-          <SeatLayoutGrid
-            sessionLayout={sessionLayout}
-            handleStudentClick={handleStudentClick}
-          />
+      <header className="app-header">
+        <div className="app-title">
+          <h1>StudyNest</h1>
         </div>
-      )}
+        <div className="header-actions">
+          <button className="settings-btn" onClick={() => navigate("/teacher")}>
+            설정
+          </button>
+        </div>
+      </header>
 
-      {sessions.length === 0 && !loading && (
-        <div className="no-sessions">오늘 등록된 야자가 없습니다.</div>
-      )}
+      <div className="content-wrapper">
+        <div className="page-header">
+          <div className="page-header-left">
+            <h2>야자 신청 현황</h2>
+            <div className="date-display">
+              <span>
+                {yyyy}-{mm}-{dd}
+              </span>
+            </div>
+          </div>
+
+          <div className="session-selector">
+            <select
+              id="session-select"
+              value={selectedSession || ""}
+              onChange={handleSessionChange}
+              disabled={loading}
+            >
+              <option value="" disabled>
+                야자를 선택하세요
+              </option>
+              {sessions.map((session) => (
+                <option key={session.id} value={session.id}>
+                  {session.name} ({session.start_time.substring(11, 16)} -{" "}
+                  {session.end_time.substring(11, 16)})
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {error && (
+          <div className="error-message">
+            <i className="fa fa-exclamation-circle"></i> {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>로딩 중...</p>
+          </div>
+        ) : (
+          <>
+            {selectedSession && sessionLayout ? (
+              <div className="session-info">
+                <div className="session-header">
+                  <h3>
+                    {sessions.find((s) => s.id === selectedSession)?.name}
+                    <span className="room-badge">
+                      {
+                        sessions.find((s) => s.id === selectedSession)?.room
+                          .name
+                      }
+                    </span>
+                  </h3>
+                  <div className="registration-count">
+                    신청 인원:{" "}
+                    <strong>{sessionLayout.registration_count}명</strong>
+                  </div>
+                </div>
+
+                <div className="layout-grid-container">
+                  <SeatLayoutGrid
+                    sessionLayout={sessionLayout}
+                    handleStudentClick={handleStudentClick}
+                  />
+                </div>
+              </div>
+            ) : (
+              sessions.length === 0 && (
+                <div className="no-sessions">
+                  <i className="fa fa-info-circle"></i>
+                  <p>오늘 등록된 야자가 없습니다.</p>
+                </div>
+              )
+            )}
+          </>
+        )}
+      </div>
 
       {modalOpen && selectedStudent && (
-        <div className="student-modal-overlay">
-          <div className="student-modal">
-            <h3>학생 정보</h3>
-            <p>이름: {selectedStudent.student.name}</p>
-            <p>
-              학번: {selectedStudent.student.grade}-
-              {selectedStudent.student.class}-{selectedStudent.student.number}
-            </p>
+        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>학생 정보</h3>
+              <button
+                className="close-button"
+                onClick={() => setModalOpen(false)}
+              >
+                <i className="fa fa-times"></i>
+              </button>
+            </div>
+
+            <div className="student-info">
+              <div className="info-item">
+                <span className="label">이름:</span>
+                <span className="value">{selectedStudent.student.name}</span>
+              </div>
+              <div className="info-item">
+                <span className="label">학번:</span>
+                <span className="value">
+                  {selectedStudent.student.grade}-
+                  {selectedStudent.student.class}-
+                  {selectedStudent.student.number}
+                </span>
+              </div>
+            </div>
 
             <div className="issue-section">
               <h4>특이사항 선택</h4>
-              <select
-                value={selectedIssueId}
-                onChange={(e) => setSelectedIssueId(e.target.value)}
-                className="issue-select"
+              <div className="select-wrapper">
+                <select
+                  value={selectedIssueId}
+                  onChange={(e) => setSelectedIssueId(e.target.value)}
+                  className="issue-select"
+                >
+                  <option value="">특이사항을 선택하세요</option>
+                  {issueTypes.map((issue) => (
+                    <option key={issue.id} value={issue.description}>
+                      {issue.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                className="primary-button"
+                onClick={handleIssueSubmit}
+                disabled={!selectedIssueId}
               >
-                <option value="">특이사항을 선택하세요</option>
-                {issueTypes.map((issue) => (
-                  <option key={issue.id} value={issue.description}>
-                    {issue.description}
-                  </option>
-                ))}
-              </select>
-              <button onClick={handleIssueSubmit} disabled={!selectedIssueId}>
-                특이사항 선택
+                특이사항 저장
               </button>
             </div>
 
@@ -408,15 +474,14 @@ const Layout = () => {
                 placeholder="메모 내용을 입력하세요"
                 rows={3}
               />
-              <button onClick={handleMemoSubmit}>메모 저장</button>
+              <button
+                className="primary-button"
+                onClick={handleMemoSubmit}
+                disabled={!memoText.trim()}
+              >
+                메모 저장
+              </button>
             </div>
-
-            <button
-              className="close-button"
-              onClick={() => setModalOpen(false)}
-            >
-              닫기
-            </button>
           </div>
         </div>
       )}

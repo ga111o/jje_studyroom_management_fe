@@ -1,21 +1,19 @@
 import React from "react";
-import "./layout.css";
+import "./seatLayout.css";
 
-interface Room {
+export interface Student {
   id: string;
   name: string;
+  grade: number;
+  class: number;
+  number: number;
+  issue_type?: string;
+  note?: string;
 }
 
-interface Student {
+export interface Room {
   id: string;
   name: string;
-  grade: string;
-  class: string;
-  number: string;
-  student_id: string;
-  registered_at: string;
-  note: string | null;
-  issue_type: string | null;
 }
 
 interface Seat {
@@ -23,20 +21,18 @@ interface Seat {
   id: string;
   row: number;
   col: number;
-  occupied: boolean;
-  student: Student | null;
+  student?: Student;
 }
 
 interface Aisle {
   type: "aisle";
 }
 
-type SeatOrAisle = Seat | Aisle;
+type GridCell = Seat | Aisle;
 
-interface SessionLayout {
-  session_id: string;
+export interface SessionLayout {
+  layout: GridCell[][];
   date: string;
-  layout: SeatOrAisle[][];
   registration_count: number;
 }
 
@@ -50,57 +46,64 @@ const SeatLayoutGrid: React.FC<SeatLayoutGridProps> = ({
   handleStudentClick,
 }) => {
   return (
-    <div className="seat-layout">
-      <table className="layout-table">
+    <div className="seat-layout-container">
+      <table className="seat-layout-table">
         <tbody>
           {sessionLayout.layout.map((row, rowIndex) => (
-            <tr key={`row-${rowIndex}`} className="layout-row">
-              {row.map((seat, colIndex) => (
-                <td
-                  key={`seat-${rowIndex}-${colIndex}`}
-                  className={`
-                    layout-cell 
-                    ${seat.type === "aisle" ? "aisle" : "seat"} 
-                    ${seat.type === "seat" && seat.occupied ? "occupied" : ""}
-                  `}
-                  onClick={() =>
-                    seat.type === "seat" &&
-                    seat.occupied &&
-                    seat.student &&
-                    seat.student.id &&
-                    handleStudentClick(seat.student, seat.id)
-                  }
-                  style={{
-                    cursor:
-                      seat.type === "seat" &&
-                      seat.occupied &&
-                      seat.student &&
-                      seat.student.id
-                        ? "pointer"
-                        : "default",
-                  }}
-                >
-                  {seat.type === "seat" && (
-                    <>
-                      <div className="seat-id">{seat.id}</div>
-                      {seat.occupied && seat.student && (
-                        <div className="student-info">
-                          <div>
-                            {seat.student.grade &&
-                            seat.student.class &&
-                            seat.student.number
-                              ? `${seat.student.grade}-${seat.student.class}-${seat.student.number}`
-                              : ""}{" "}
-                            {seat.student.name || ""}
-                          </div>
-                          <div>{seat.student.issue_type || ""}</div>
-                          <div>{seat.student.note || ""}</div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </td>
-              ))}
+            <tr key={`row-${rowIndex}`}>
+              {row.map((cell, colIndex) => {
+                if (cell.type === "aisle") {
+                  return (
+                    <td
+                      key={`aisle-${rowIndex}-${colIndex}`}
+                      className="aisle-cell"
+                    ></td>
+                  );
+                } else {
+                  const seat = cell as Seat;
+                  const isOccupied = !!seat.student;
+
+                  return (
+                    <td
+                      key={`seat-${seat.id}`}
+                      className={`seat-cell ${
+                        isOccupied ? "occupied" : "empty"
+                      }`}
+                      onClick={() => {
+                        if (isOccupied && seat.student) {
+                          handleStudentClick(seat.student, seat.id);
+                        }
+                      }}
+                    >
+                      <div className="seat-content">
+                        <div className="seat-id">{seat.id}</div>
+                        {isOccupied && seat.student && (
+                          <>
+                            <div className="student-name">
+                              {seat.student.name}
+                            </div>
+                            <div className="student-id">
+                              {seat.student.grade}-{seat.student.class}-
+                              {seat.student.number}
+                            </div>
+
+                            {seat.student.issue_type && (
+                              <div className="student-issue">
+                                <span>{seat.student.issue_type}</span>
+                              </div>
+                            )}
+                            {seat.student.note && (
+                              <div className="student-note">
+                                <span>{seat.student.note}</span>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  );
+                }
+              })}
             </tr>
           ))}
         </tbody>
@@ -110,4 +113,3 @@ const SeatLayoutGrid: React.FC<SeatLayoutGridProps> = ({
 };
 
 export default SeatLayoutGrid;
-export type { SessionLayout, Student, Room, Seat, Aisle, SeatOrAisle };
