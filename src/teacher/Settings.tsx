@@ -3,10 +3,11 @@ import IssueSettings from "./settings/IssueSettings";
 import StudyRoomSettings from "./settings/StudyRoomSettings";
 import StudySessionSettings from "./settings/StudySessionSettings";
 import "./Settings.css";
-
+import { useNavigate } from "react-router-dom";
 type SettingTab = "studyRoom" | "studySession" | "issue";
 
 const Settings: React.FC = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<SettingTab>("studyRoom");
 
   const renderTabContent = () => {
@@ -26,6 +27,9 @@ const Settings: React.FC = () => {
     <div className="settings-page">
       <div className="page-header">
         <h2>설정</h2>
+        <button className="back-button" onClick={() => navigate("/")}>
+          홈으로 이동
+        </button>
       </div>
 
       <div className="settings-container">

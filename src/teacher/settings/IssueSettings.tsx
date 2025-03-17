@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./IssueSettings.css";
 
 interface IssueType {
   id: string;
@@ -10,7 +11,7 @@ interface IssueTypeFormData {
   description: string;
 }
 
-const Issue: React.FC = () => {
+const IssueSettings: React.FC = () => {
   const [issueTypes, setIssueTypes] = useState<IssueType[]>([]);
   const [formData, setFormData] = useState<IssueTypeFormData>({
     description: "",
@@ -148,93 +149,120 @@ const Issue: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>특이사항 목록 관리</h1>
+    <div className="issue-settings-container">
+      <div className="issue-settings-header">
+        <h3>특이사항 목록 관리</h3>
+        <p className="settings-description">
+          학생들의 특이사항을 추가, 수정, 삭제할 수 있습니다.
+        </p>
+      </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <div className="issue-error-message">{error}</div>}
 
-      <form
-        onSubmit={editingId ? handleUpdateIssueType : handleCreateIssueType}
-      >
-        <div>
-          <label htmlFor="description">특이사항 목록:</label>
-          <input
-            type="text"
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
+      <div className="issue-form-section">
+        <form
+          className="issue-form"
+          onSubmit={editingId ? handleUpdateIssueType : handleCreateIssueType}
+        >
+          <div className="issue-form-group">
+            <label htmlFor="description">특이사항 목록:</label>
+            <input
+              type="text"
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              required
+              className="issue-input"
+              placeholder="새 특이사항을 입력하세요"
+            />
+          </div>
 
-        <div>
-          {editingId ? (
-            <>
-              <button type="submit" disabled={loading}>
-                {loading ? "처리 중..." : "수정"}
-              </button>
+          <div className="issue-form-actions">
+            {editingId ? (
+              <>
+                <button
+                  type="submit"
+                  className="issue-btn issue-btn-primary"
+                  disabled={loading}
+                >
+                  {loading ? "처리 중..." : "수정"}
+                </button>
+                <button
+                  type="button"
+                  className="issue-btn issue-btn-secondary"
+                  onClick={handleCancelEdit}
+                  disabled={loading}
+                >
+                  취소
+                </button>
+              </>
+            ) : (
               <button
-                type="button"
-                onClick={handleCancelEdit}
+                type="submit"
+                className="issue-btn issue-btn-primary"
                 disabled={loading}
               >
-                취소
+                {loading ? "처리 중..." : "생성"}
               </button>
-            </>
-          ) : (
-            <button type="submit" disabled={loading}>
-              {loading ? "처리 중..." : "생성"}
-            </button>
-          )}
-        </div>
-      </form>
-
-      <h2>특이사항 목록 목록</h2>
-
-      {loading && !editingId ? (
-        <p>로딩 중...</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>설명</th>
-              <th>작업</th>
-            </tr>
-          </thead>
-          <tbody>
-            {issueTypes.length === 0 ? (
-              <tr>
-                <td colSpan={3}>등록된 특이사항 목록이 없습니다.</td>
-              </tr>
-            ) : (
-              issueTypes.map((issueType) => (
-                <tr key={issueType.id}>
-                  <td>{issueType.id}</td>
-                  <td>{issueType.description}</td>
-                  <td>
-                    <button
-                      onClick={() => handleEditMode(issueType)}
-                      disabled={loading}
-                    >
-                      수정
-                    </button>
-                    <button
-                      onClick={() => handleDeleteIssueType(issueType.id)}
-                      disabled={loading}
-                    >
-                      삭제
-                    </button>
-                  </td>
-                </tr>
-              ))
             )}
-          </tbody>
-        </table>
-      )}
+          </div>
+        </form>
+      </div>
+
+      <div className="issue-list-section">
+        <h4>특이사항 목록</h4>
+
+        {loading && !editingId ? (
+          <div className="issue-loading">로딩 중...</div>
+        ) : (
+          <div className="issue-table-container">
+            <table className="issue-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>설명</th>
+                  <th>작업</th>
+                </tr>
+              </thead>
+              <tbody>
+                {issueTypes.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="issue-empty-message">
+                      등록된 특이사항 목록이 없습니다.
+                    </td>
+                  </tr>
+                ) : (
+                  issueTypes.map((issueType) => (
+                    <tr key={issueType.id}>
+                      <td>{issueType.id}</td>
+                      <td>{issueType.description}</td>
+                      <td className="issue-actions">
+                        <button
+                          className="issue-btn issue-btn-edit"
+                          onClick={() => handleEditMode(issueType)}
+                          disabled={loading}
+                        >
+                          수정
+                        </button>
+                        <button
+                          className="issue-btn issue-btn-delete"
+                          onClick={() => handleDeleteIssueType(issueType.id)}
+                          disabled={loading}
+                        >
+                          삭제
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default Issue;
+export default IssueSettings;
