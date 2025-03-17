@@ -108,12 +108,6 @@ const Teacher: React.FC = () => {
     return grades.length > 0 ? grades.join(", ") : "없음";
   };
 
-  // 날짜 및 시간 포맷팅 함수
-  const formatDateTime = (dateTimeStr: string): string => {
-    const date = new Date(dateTimeStr);
-    return date.toLocaleString("ko-KR");
-  };
-
   // 야자 날짜 불러오기 함수
   const fetchSessionDates = async (sessionId: number) => {
     setLoadingDates(true);
